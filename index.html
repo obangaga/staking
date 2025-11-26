@@ -228,7 +228,7 @@
 
     <script>
         // Set tanggal target: 29 Januari pukul 23:00
-        const targetDate = new Date(new Date().getFullYear(), 0, 29, 23, 0, 0).getTime();
+        let targetDate = new Date(new Date().getFullYear(), 0, 29, 23, 0, 0).getTime();
         
         // Jika tanggal 29 Januari sudah lewat tahun ini, set untuk tahun depan
         if (targetDate < new Date().getTime()) {
