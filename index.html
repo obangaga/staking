@@ -106,6 +106,28 @@
             color: #a0aec0;
         }
 
+        .investment-display {
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .investment-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .investment-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
         .reward-info {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 15px;
@@ -170,6 +192,14 @@
             .countdown-value {
                 font-size: 2rem;
             }
+            
+            .investment-value {
+                font-size: 2rem;
+            }
+            
+            .reward-details {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -177,6 +207,11 @@
     <div class="container">
         <h1>Staking Period Countdown</h1>
         <p class="subtitle">Menunggu periode kunci staking berakhir</p>
+        
+        <div class="investment-display">
+            <div class="investment-title">Total Investasi Staking</div>
+            <div class="investment-value">Rp. 17.380.000</div>
+        </div>
         
         <div class="countdown-container">
             <div class="countdown-box">
