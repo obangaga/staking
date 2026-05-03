@@ -346,9 +346,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
   flex:1;background:transparent;border:none;
   color:var(--text);padding:6px 0;
   font-family:'Geist',sans-serif;font-size:0.9rem;
-  outline:none;resize:none;
+  outline:none;
   min-height:36px;max-height:140px;line-height:1.5;
   -webkit-user-select:text;user-select:text;
+  -webkit-user-modify:read-write;
+  word-break:break-word;
+  overflow-y:auto;
 }
 #userInput::placeholder{color:var(--text3);}
 #userInput:empty:before{
