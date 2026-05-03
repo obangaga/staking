@@ -351,6 +351,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
   -webkit-user-select:text;user-select:text;
 }
 #userInput::placeholder{color:var(--text3);}
+#userInput:empty:before{
+  content:attr(data-placeholder);
+  color:var(--text3);
+  pointer-events:none;
+}
 .send-btn{
   background:var(--accent);color:#fff;border:none;
   width:36px;height:36px;border-radius:9px;
@@ -509,7 +514,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
     <div class="input-wrap">
       <div class="input-inner">
         <div class="input-box">
-          <textarea id="userInput" placeholder="Ketik pesan atau paste data transaksi..." rows="1"></textarea>
+          <div id="userInput" contenteditable="true" data-placeholder="Ketik pesan atau paste data transaksi..." style="min-height:36px;max-height:140px;overflow-y:auto;"></div>
           <button class="send-btn" id="sendBtn" onclick="sendMsg()" title="Kirim">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
           </button>
@@ -749,12 +754,11 @@ function escHtml(t) {
 // ===== SEND =====
 async function sendMsg() {
   const input = document.getElementById('userInput');
-  const text = input.value.trim();
+  const text = input.innerText.trim();
   if(!text) return;
 
   const btn = document.getElementById('sendBtn');
-  input.value = '';
-  input.style.height = 'auto';
+  input.innerText = '';
   btn.disabled = true;
 
   saveSession(text);
