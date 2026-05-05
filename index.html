@@ -544,7 +544,9 @@ async function callAPI(messages) {
     body: JSON.stringify({model:MODEL, messages, max_tokens:1024, temperature:0.8})
   });
   if(!r.ok) throw new Error('API Error '+r.status);
-  return r.json();
+  const data = await r.json();
+  if(!data.choices || !data.choices[0]) throw new Error('Response kosong dari model');
+  return data;
 }
 
 // ===== PRINT =====
