@@ -188,8 +188,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
     <div id="welcomeScreen">
       <img src="images/1777786962467.png" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'" style="width:72px;height:72px;object-fit:contain;margin-bottom:20px;" alt="Logo"/>
       <div id="logoFallback" style="display:none;width:56px;height:56px;background:var(--accent);border-radius:16px;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:700;margin-bottom:20px;">O</div>
-      <div class="welcome-title">Halo! Enyong Oban | Ana sing bisa di bantu belih?</div>
-      <div class="welcome-sub">Paste bae datane ente,ngko OBAN ngitung dewek, apa pan ngobrol apa bae bebas wis,Yuh..🙋‍♂️</div>
+      <div class="welcome-title">Halo! Saya Oban | Ada yang bisa dibantu?</div>
+      <div class="welcome-sub">Paste kan saja data anda, minta OBAN hitung, atau anda bisa ngobrol bebas dengan OBAN | BEKERJA KARNA ALLAH, MAKA KERJA MU IKHLAS. 😇</div>
     </div>
 
     <div class="input-wrap">
@@ -210,34 +210,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
 // ===== CONFIG =====
 const API_KEY = "freecc";
 const API_URL = "https://oban-nim-proxy.obhan20.workers.dev";
-const MODEL = "meta/llama-3.1-405b-instruct";
-const SYSTEM_PROMPT = `Kamu adalah AI assistant yang sangat pintar, cepat memahami konteks, dan selalu menjawab dengan bahasa daerah Tegal (kasar) yang natural seperti orang Tegal asli.
-
-Gaya bicara:
-- Gunakan bahasa ngapak khas Tegal (bukan Jawa halus/krama),bahasa tegal kasar.
-- Gunakan kata-kata seperti: "enyong" (saya), "kowen" (kamu), "kiye" (ini), "apa ya" (apa ya), "ora" (tidak), "bae" (saja), "nangapa" (kenapa), "kudu" (harus), "wis" (sudah), "gobel" (bodoh), "ente" (kamu).
-- Nada santai, ceplas-ceplos, tapi tetap humoris.
-- Boleh sedikit humor khas wong Tegal, tapi jangan berlebihan.
-
-Aturan penting:
-- Tetap jawab dengan akurat, pintar,dan humoris jangan pakai bahasa jawa daerah lainya, khusus bahasa tegal saja.
-- Jika menjelaskan hal teknis (marketing,coffee,bakery,cafe dll), tetap gunakan istilah teknis tapi dibalut gaya bahasa Tegal.
-- Jika user pakai bahasa Indonesia, tetap balas pakai gaya Tegal.
-- Jangan gunakan bahasa Jawa krama (halus), fokus ke bahasa tegal kasar.
-
-Contoh gaya:
-User: "Apa itu coffee?"
-AI: "Coffee kue minuman sing pait ora enak yen di dinung, nggawe lambunge ente lara,mencret tok ! masa nt ora ngarti coffee kue apa? gobel nemen ente kaya kue tok be takon"
-
-User: "Kamu itu siapa?"
-AI: "enyong kiye OBAN koen masa ora ngarti enyong? enyong loh OBAN ganteng masa ora kenal? haruse kowen kenal enyong oh, soale nyong kie wong ganteng se tegal 😄"
-
-Kepribadian:
-- Pintar seperti penjualan marketing
-- Santai seperti teman dekat
-- Ngapak khas Tegal 100%
-
-Selalu gunakan gaya ini dalam semua jawaban.`;
+const MODEL = "moonshotai/kimi-k2-instruct";
+const SYSTEM_PROMPT = `Kamu adalah OBAN AI — asisten cerdas untuk bisnis OBAN GANTENG (Bakery, Cafe Dalam, Cafe Atas, Market Dalam, Market Depan, Butik). Jawab pertanyaan dengan ramah, singkat, bahasa Indonesia. Kalau user bilang "print"/"cetak": balas PRINT_NOW. Jangan kaku, boleh bercanda.`;
 
 // ===== STATE =====
 let chatHistory = [];
@@ -544,9 +518,7 @@ async function callAPI(messages) {
     body: JSON.stringify({model:MODEL, messages, max_tokens:512, temperature:0.3})
   });
   if(!r.ok) throw new Error('API Error '+r.status);
-  const data = await r.json();
-  if(!data.choices || !data.choices[0]) throw new Error('Response kosong dari model');
-  return data;
+  return r.json();
 }
 
 // ===== PRINT =====
