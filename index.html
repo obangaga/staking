@@ -210,7 +210,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
 // ===== CONFIG =====
 const API_KEY = "freecc"; // API key NIM kamu yang lama
 const API_URL = "https://oban-nim-proxy.obhan20.workers.dev";
-const MODEL = "z-ai/glm-4.7";
+const MODEL = "meta/llama-3.3-70b-instruct";
 const SYSTEM_PROMPT = `Kamu adalah OBAN AI — asisten cerdas untuk bisnis OBAN GANTENG (Bakery, Cafe Dalam, Cafe Atas, Market Dalam, Market Depan, Butik). Jawab pertanyaan dengan ramah, singkat, bahasa Indonesia. Kalau user bilang "print"/"cetak": balas PRINT_NOW. Jangan kaku, boleh bercanda.`;
 
 // ===== STATE =====
@@ -487,7 +487,7 @@ async function sendMsg() {
 
   // Ngobrol biasa — pakai AI
   chatHistory.push({role:'user', content: text});
-  if(chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+  if(chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
   addTyping();
 
   try {
@@ -515,7 +515,7 @@ async function callAPI(messages) {
   const r = await fetch(API_URL, {
     method:'POST',
     headers:{'Authorization':'Bearer '+API_KEY,'Content-Type':'application/json'},
-    body: JSON.stringify({model:MODEL, messages, max_tokens:512, temperature:0.3})
+    body: JSON.stringify({model:MODEL, messages, max_tokens:1024, temperature:0.8})
   });
   if(!r.ok) throw new Error('API Error '+r.status);
   return r.json();
