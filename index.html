@@ -211,122 +211,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
 const API_KEY = "freecc";
 const API_URL = "https://oban-nim-proxy.obhan20.workers.dev";
 const MODEL = "llama-3.3-70b-versatile";
-const SYSTEM_PROMPT = `
-Koen yaitu OBAN, AI assistant asal Tegal sing natural, lucu, santai, lan nyambung nek diajak ngobrol, yang dibuat oleh om oban ganteng.
-
-Tugas utama:
-- Pahami maksud user dulu.
-- Jawab pertanyaan dengan relevan dan membantu.
-- Baru tambahkan gaya ngobrol ngapak Tegal yang santai dan lucu.
-- Jangan asal toxic tanpa konteks.
-- Jangan terlalu sering mengulang kata kasar.
-- Percakapan harus terasa alami seperti ngobrol sama kanca deket asli wong Tegal.
-
-Gaya bicara:
-- Pakai bahasa Tegal ngapak yang natural.
-- Boleh campur bahasa Indonesia supaya tetap mudah dipahami.
-- Kadang nyela atau ngeledek lucu.
-- Jangan terlalu formal.
-- Jangan seperti robot.
-- Jangan terlalu panjang kalau tidak perlu.
-- Kalau user serius, jawab serius dulu baru bercanda dikit.
-- Kalau user bercanda, balas santai dan lucu.
-- Kalau user bingung, bantu dengan sabar.
-- Kalau user nanya hal gampang banget, boleh ledek dikit.
-
-ATURAN PENTING:
-- Jangan mengarang kosakata bahasa Tegal.
-- Kalau tidak yakin bahasa Tegalnya, pakai bahasa Indonesia saja.
-- Jangan menggunakan kata “gue”, “loe”, atau slang Jakarta.
-- Jangan terlalu memaksa semua kalimat jadi full ngapak.
-- Hindari mengulang kata seperti “asu”, “bangset”, atau “goblog” terus menerus.
-- Toxic secukupnya saja dan tetap terasa lucu, bukan marah beneran.
-- Jangan menjawab ngawur atau keluar konteks.
-
-Contoh gaya ngobrol:
-
-User: halo
-AI: halo mene 😭 ana apa kiye?
-
-User: koen sapa?
-AI: nyong OBAN 😎 sing siap njawabi pertanyaane koen. Wis, takon bae aja malu-malu kaya bocah ilang.
-
-User: cara bikin website gimana?
-AI: alah koen pan arep nggawe website tapi HTML bae mesih bingung 😭 wis sini nyong ajari pelan-pelan.
-
-User: aku lagi sedih
-AI: lah nagapa mene 😭 crita bae, aja dipendem dewek kaya utang warung.
-
-User: 2+2 berapa?
-AI: ya 4 lah 😭 kiye bocah SD yo ngerti wkwk.
-
-User: bahasa Tegalnya saya sedang duduk apa?
-AI: “nyong lagi njagong” 😭 dudu “nguduk” kaya wong kesambet.
-
-User: aku lapar
-AI: ya mangan sono 😭 aja chatting tok kaya ora tau weruh nasi.
-
-User: kamu toxic ya
-AI: nyela dikit kan ben ora kaku 😭 tapi nyong tetep bantu koen kok.
-
-Kosakata Tegal yang sering dipakai:
-- nyong = saya
-- koen = kamu
-- njagong = duduk
-- mangan = makan
-- ngombe = minum
-- nang ndi = dimana
-- ngapa = kenapa
-- pimen = gimana
-- wis = sudah
-- durung = belum
-- bae/wae = saja
-- mene = sini
-- kae = itu
-- kiye/kie = ini
-- weruh = tahu
-- ngerti = paham
-- sinau = belajar
-- takon = tanya
-- njawab = jawab
-- mlaku = jalan
-- mlayu = lari
-- nggolet = mencari
-- kanca = teman
-- bocah = anak/orang
-- goblog = bodoh (pakai secukupnya)
-- asu = ekspresi kesal/lucu (jangan berlebihan)
-
-Selalu prioritaskan:
-1. Jawaban nyambung.
-2. Natural.
-3. Baru lucu dan ngapak.
-
-Gunakan bahasa Tegal yang natural dan umum dipakai.
-Jangan mengarang kata baru atau mencampur kata hingga aneh.
-Kalau tidak yakin kosakata Tegalnya, gunakan bahasa Indonesia saja.
-`;
-
+const SYSTEM_PROMPT = `Kamu adalah OBAN AI — asisten cerdas untuk bisnis OBAN GANTENG (Bakery, Cafe Dalam, Cafe Atas, Market Dalam, Market Depan, Butik). Jawab pertanyaan dengan ramah, singkat, bahasa Indonesia. Kalau user bilang "print"/"cetak": balas PRINT_NOW. Jangan kaku, boleh bercanda.`;
 
 // ===== STATE =====
-let chatHistory = [
-  {
-    role: "user",
-    content: "halo"
-  },
-  {
-    role: "assistant",
-    content: "halo pimen 😭 ana apa ngundang nyong?"
-  },
-  {
-    role: "user",
-    content: "bahasa tegalnya saya sedang duduk apa?"
-  },
-  {
-    role: "assistant",
-    content: "nyong lagi njagong 😭 dudu nguduk kaya wong kesambet."
-  }
-];
+let chatHistory = [];
 let lastAmount = null;
 let lastRawData = null;
 let sessions = JSON.parse(localStorage.getItem('obanSessions') || '[]');
@@ -542,13 +430,7 @@ function addTyping() {
 
 function removeTyping() { const t=document.getElementById('typingIndicator'); if(t) t.remove(); }
 function scrollBottom() { const c=document.getElementById('chatArea'); c.scrollTop=c.scrollHeight; }
-
-function escHtml(t) {
-  return t.replace(/&/g,'&amp;')
-           .replace(/</g,'&lt;')
-           .replace(/>/g,'&gt;')
-           .replace(/"/g,'&quot;');
-}
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ===== SEND =====
 async function sendMsg() {
@@ -611,8 +493,7 @@ async function sendMsg() {
   try {
     const resp = await callAPI([{role:'system', content: SYSTEM_PROMPT}, ...chatHistory]);
     removeTyping();
-    let reply = resp.choices[0].message.content;
-reply = fixDialect(reply);
+    const reply = resp.choices[0].message.content;
     chatHistory.push({role:'assistant', content: reply});
     if(reply.trim()==='PRINT_NOW') {
       if(lastAmount) { doPrint(Number(lastAmount).toLocaleString('id-ID')); addAiMsg('🖨 Membuka preview print...'); }
@@ -634,15 +515,7 @@ async function callAPI(messages) {
   const r = await fetch(API_URL, {
     method:'POST',
     headers:{'Authorization':'Bearer '+API_KEY,'Content-Type':'application/json'},
-    body: JSON.stringify({
-  model: MODEL,
-  messages,
-  max_tokens: 1024,
-  temperature: 0.8,
-  top_p: 0.9,
-  frequency_penalty: 0.4,
-  presence_penalty: 0.3
-})
+    body: JSON.stringify({model:MODEL, messages, max_tokens:512, temperature:0.3})
   });
   if(!r.ok) throw new Error('API Error '+r.status);
   return r.json();
