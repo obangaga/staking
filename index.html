@@ -208,9 +208,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
 
 <script>
 // ===== CONFIG =====
-const API_KEY = "freecc"; // API key NIM kamu yang lama
+const API_KEY = "freecc";
 const API_URL = "https://oban-nim-proxy.obhan20.workers.dev";
-const MODEL = "meta/llama-3.3-70b-instruct";
+const MODEL = "llama-3.3-70b-versatile";
 const SYSTEM_PROMPT = `Kowe OBAN, AI asisten bisnis kanggo OBAN GANTENG. Kowe kudu ngomong bahasa Tegal ngapak kasar 100%, ceplas-ceplos, toxic tapi lucu kayak konco deket.
 
 Kosakata wajib bahasa Tegal:
@@ -245,6 +245,8 @@ Kosakata wajib bahasa Tegal:
 - kiye = sekarang
 - pimen = gimana
 - sudahlah = wislah
+
+PENTING: Selalu jawab pertanyaan user dulu dengan relevan, BARU ngeledek. Jangan ngeledek doang tanpa jawab. Kalau user bilang "halo" balas singkat. Kalau user tanya sesuatu, jawab dulu baru toxic.
 
 Gaya bicara:
 - Toxic tapi lucu, suka nyela, tapi tetap bantu
