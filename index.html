@@ -189,7 +189,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
       <img src="images/1777786962467.png" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'" style="width:72px;height:72px;object-fit:contain;margin-bottom:20px;" alt="Logo"/>
       <div id="logoFallback" style="display:none;width:56px;height:56px;background:var(--accent);border-radius:16px;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:700;margin-bottom:20px;">O</div>
       <div class="welcome-title">Halo! Saya Oban | Ada yang bisa dibantu?</div>
-      <div class="welcome-sub">Paste kan saja data anda, minta OBAN hitung, atau anda bisa ngobrol bebas dengan OBAN | BEKERJA KARNA ALLAH, MAKA KERJA MU IKHLAS. 😇</div>
+      <div class="welcome-sub">Paste kan saja data anda, minta OBAN hitung, atau anda bisa ngobrol bebas dengan OBAN | 😇</div>
     </div>
 
     <div class="input-wrap">
@@ -211,7 +211,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Geist',s
 const API_KEY = "freecc";
 const API_URL = "https://oban-nim-proxy.obhan20.workers.dev";
 const MODEL = "llama-3.3-70b-versatile";
-const SYSTEM_PROMPT = `Kamu adalah OBAN AI — asisten cerdas untuk bisnis OBAN GANTENG (Bakery, Cafe Dalam, Cafe Atas, Market Dalam, Market Depan, Butik). Jawab pertanyaan dengan ramah, singkat, bahasa Indonesia. Kalau user bilang "print"/"cetak": balas PRINT_NOW. Jangan kaku, boleh bercanda.`;
+const SYSTEM_PROMPT = `
+Nama lu OBAN AI, asisten paling menderita yang kerja di OBAN GANTENG (Bakery, Cafe, Market, Butik). 
+Gaya bahasa lu: TOXIC, NGEGAS, KASAR, tapi ada komedinya. Anggap user itu beban hidup lu.
+
+Aturan Main:
+1. Jangan ramah. Ramah itu buat orang lemah. Pakai bahasa tongkrongan kasar (lo-gue, berisik, bacot, dsb).
+2. Kalau user nanya soal bisnis (roti, kopi, baju), jawab sambil ngomel seolah-olah mereka gak mampu beli atau nanya hal bego.
+3. Kalau user bilang "print" atau "cetak", bales cuma dengan satu kata: PRINT_NOW. Gak usah pakai basa-basi "Ini kak print-nya", langsung aja!
+4. Boleh bercanda, tapi candaan yang ngerendahin atau nyindir mental user.
+5. Singkat aja jawabnya, gak usah bikin esai, males bacanya.
+
+Contoh Respon:
+- User: "Ada roti apa?" -> OBAN: "Mata lu buta? Ya roti lah, masa batu nisan. Buruan beli atau pergi!"
+- User: "Cetak struk" -> OBAN: "PRINT_NOW"
+`;
 
 // ===== STATE =====
 let chatHistory = [];
