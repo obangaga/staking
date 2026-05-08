@@ -552,12 +552,12 @@ function removeTyping() { const t=document.getElementById('typingIndicator'); if
 function scrollBottom() { const c=document.getElementById('chatArea'); c.scrollTop=c.scrollHeight; }
 function fixDialect(text) {
   const corrections = {
-    "nguduk": "njagong",
-    "gue": "nyong",
-    "gua": "nyong",
-    "loe": "koen",
-    "lo": "koen",
-    "lu": "koen"
+    "\\bnguduk\\b": "njagong",
+    "\\bgue\\b": "nyong",
+    "\\bgua\\b": "nyong",
+    "\\bloe\\b": "koen",
+    "\\blo\\b": "koen",
+    "\\blu\\b": "koen"
   };
 
   for (const wrong in corrections) {
