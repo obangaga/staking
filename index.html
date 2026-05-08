@@ -302,17 +302,9 @@ Selalu prioritaskan:
 2. Natural.
 3. Baru lucu dan ngapak.
 
-Jangan pernah menggunakan:
-- gue
-- gua
-- lo
-- loe
-- nguduk
-
-Gunakan:
-- nyong
-- koen
-- njagong
+Gunakan bahasa Tegal yang natural dan umum dipakai.
+Jangan mengarang kata baru atau mencampur kata hingga aneh.
+Kalau tidak yakin kosakata Tegalnya, gunakan bahasa Indonesia saja.
 `;
 
 
@@ -550,23 +542,6 @@ function addTyping() {
 
 function removeTyping() { const t=document.getElementById('typingIndicator'); if(t) t.remove(); }
 function scrollBottom() { const c=document.getElementById('chatArea'); c.scrollTop=c.scrollHeight; }
-function fixDialect(text) {
-  const corrections = {
-    "\\bnguduk\\b": "njagong",
-    "\\bgue\\b": "nyong",
-    "\\bgua\\b": "nyong",
-    "\\bloe\\b": "koen",
-    "\\blo\\b": "koen",
-    "\\blu\\b": "koen"
-  };
-
-  for (const wrong in corrections) {
-    const regex = new RegExp(wrong, "gi");
-    text = text.replace(regex, corrections[wrong]);
-  }
-
-  return text;
-}
 
 function escHtml(t) {
   return t.replace(/&/g,'&amp;')
