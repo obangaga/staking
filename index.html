@@ -301,11 +301,40 @@ Selalu prioritaskan:
 1. Jawaban nyambung.
 2. Natural.
 3. Baru lucu dan ngapak.
+
+Jangan pernah menggunakan:
+- gue
+- gua
+- lo
+- loe
+- nguduk
+
+Gunakan:
+- nyong
+- koen
+- njagong
 `;
 
 
 // ===== STATE =====
-let chatHistory = [];
+let chatHistory = [
+  {
+    role: "user",
+    content: "halo"
+  },
+  {
+    role: "assistant",
+    content: "halo pimen 😭 ana apa ngundang nyong?"
+  },
+  {
+    role: "user",
+    content: "bahasa tegalnya saya sedang duduk apa?"
+  },
+  {
+    role: "assistant",
+    content: "nyong lagi njagong 😭 dudu nguduk kaya wong kesambet."
+  }
+];
 let lastAmount = null;
 let lastRawData = null;
 let sessions = JSON.parse(localStorage.getItem('obanSessions') || '[]');
@@ -521,7 +550,30 @@ function addTyping() {
 
 function removeTyping() { const t=document.getElementById('typingIndicator'); if(t) t.remove(); }
 function scrollBottom() { const c=document.getElementById('chatArea'); c.scrollTop=c.scrollHeight; }
-function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fixDialect(text) {
+  const corrections = {
+    "nguduk": "njagong",
+    "gue": "nyong",
+    "gua": "nyong",
+    "loe": "koen",
+    "lo": "koen",
+    "lu": "koen"
+  };
+
+  for (const wrong in corrections) {
+    const regex = new RegExp(wrong, "gi");
+    text = text.replace(regex, corrections[wrong]);
+  }
+
+  return text;
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;')
+           .replace(/</g,'&lt;')
+           .replace(/>/g,'&gt;')
+           .replace(/"/g,'&quot;');
+}
 
 // ===== SEND =====
 async function sendMsg() {
@@ -578,13 +630,14 @@ async function sendMsg() {
 
   // Ngobrol biasa — pakai AI
   chatHistory.push({role:'user', content: text});
-  if(chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
+  if(chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
   addTyping();
 
   try {
     const resp = await callAPI([{role:'system', content: SYSTEM_PROMPT}, ...chatHistory]);
     removeTyping();
-    const reply = resp.choices[0].message.content;
+    let reply = resp.choices[0].message.content;
+reply = fixDialect(reply);
     chatHistory.push({role:'assistant', content: reply});
     if(reply.trim()==='PRINT_NOW') {
       if(lastAmount) { doPrint(Number(lastAmount).toLocaleString('id-ID')); addAiMsg('🖨 Membuka preview print...'); }
@@ -606,7 +659,15 @@ async function callAPI(messages) {
   const r = await fetch(API_URL, {
     method:'POST',
     headers:{'Authorization':'Bearer '+API_KEY,'Content-Type':'application/json'},
-    body: JSON.stringify({model:MODEL, messages, max_tokens:1024, temperature:0.8})
+    body: JSON.stringify({
+  model: MODEL,
+  messages,
+  max_tokens: 1024,
+  temperature: 0.8,
+  top_p: 0.9,
+  frequency_penalty: 0.4,
+  presence_penalty: 0.3
+})
   });
   if(!r.ok) throw new Error('API Error '+r.status);
   return r.json();
