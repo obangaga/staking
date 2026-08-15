@@ -272,20 +272,58 @@
   .stat-box .val{font-family:'JetBrains Mono', monospace; font-size:20px; font-weight:700; color:var(--text);}
   .stat-box .val small{font-size:11px; color:var(--text-faint); font-weight:400;}
 
-  .macro-card{
+  .menu-btn{
+    width:100%;
+    background:transparent;
+    color:var(--lime);
+    border:1px solid var(--lime-dim);
+    border-radius:12px;
+    padding:14px;
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    margin-bottom:14px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .menu-btn:hover{background:rgba(198,255,61,0.07);}
+  .menu-btn:active{transform:scale(0.98);}
+  .menu-btn.open{background:rgba(198,255,61,0.1);}
+
+  .menu-card{
+    display:none;
     background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
     padding:18px; margin-bottom:14px;
   }
-  .macro-card h3{margin:0 0 14px; font-size:13px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; font-weight:600;}
-  .macro-item{margin-bottom:13px;}
-  .macro-item:last-child{margin-bottom:0;}
-  .macro-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
-  .macro-name{display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600; color:var(--text);}
-  .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
-  .macro-grams{font-family:'JetBrains Mono', monospace; font-size:14px; color:var(--text);}
-  .macro-grams small{color:var(--text-muted); font-size:11px;}
-  .macro-track{height:8px; background:#101211; border-radius:6px; overflow:hidden;}
-  .macro-fill{height:100%; width:0%; border-radius:6px; transition:width 1s cubic-bezier(.22,1,.36,1);}
+  .menu-card.show{display:block; animation:fadeUp .4s ease;}
+  .menu-macro-line{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-muted);
+    padding-bottom:14px;
+    margin-bottom:14px;
+    border-bottom:1px solid var(--card-border);
+  }
+  .menu-macro-line b{color:var(--text); font-weight:700;}
+  .meal-block{margin-bottom:16px;}
+  .meal-block:last-child{margin-bottom:0;}
+  .meal-title{
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--lime); margin-bottom:8px;
+  }
+  .meal-title::after{content:''; flex:1; height:1px; background:var(--card-border);}
+  .meal-items{list-style:none; margin:0; padding:0;}
+  .meal-items li{
+    font-size:13.5px; color:var(--text); padding:4px 0 4px 16px; position:relative; line-height:1.4;
+  }
+  .meal-items li::before{
+    content:'—'; position:absolute; left:0; color:var(--text-faint);
+  }
+  .menu-note{
+    font-size:11.5px; color:var(--text-faint); line-height:1.6; margin:16px 0 0; padding-top:14px; border-top:1px solid var(--card-border);
+  }
 
   .journey-card{
     background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
@@ -474,29 +512,11 @@
       </div>
     </div>
 
-    <div class="macro-card">
-      <h3>Target Makro Harian</h3>
-      <div class="macro-item">
-        <div class="macro-top">
-          <span class="macro-name"><span class="dot" style="background:var(--red)"></span>Protein</span>
-          <span class="macro-grams" id="proteinG">0g <small id="proteinPct">(0%)</small></span>
-        </div>
-        <div class="macro-track"><div class="macro-fill" id="proteinFill" style="background:var(--red)"></div></div>
-      </div>
-      <div class="macro-item">
-        <div class="macro-top">
-          <span class="macro-name"><span class="dot" style="background:var(--amber)"></span>Karbohidrat</span>
-          <span class="macro-grams" id="carbG">0g <small id="carbPct">(0%)</small></span>
-        </div>
-        <div class="macro-track"><div class="macro-fill" id="carbFill" style="background:var(--amber)"></div></div>
-      </div>
-      <div class="macro-item">
-        <div class="macro-top">
-          <span class="macro-name"><span class="dot" style="background:var(--teal)"></span>Lemak</span>
-          <span class="macro-grams" id="fatG">0g <small id="fatPct">(0%)</small></span>
-        </div>
-        <div class="macro-track"><div class="macro-fill" id="fatFill" style="background:var(--teal)"></div></div>
-      </div>
+    <button type="button" class="menu-btn" id="menuBtn">🍽️ Lihat Menu</button>
+    <div class="menu-card" id="menuCard">
+      <div class="menu-macro-line" id="menuMacroLine"></div>
+      <div id="menuList"></div>
+      <p class="menu-note">Perkiraan kasar, bukan hitungan gram presisi. Buat angka yang lebih akurat, cek pakai food tracker (MyFitnessPal / FatSecret).</p>
     </div>
 
     <div class="journey-card" id="journeyCard">
@@ -544,6 +564,61 @@
   }
 
   const CIRC = 2 * Math.PI * 88; // 553
+
+  // ---- Menu generator: scales a reference ~3000 kkal menu proportionally to target kalori ----
+  const BASE_KCAL = 3004;
+  function scaleG(base, mult){ return Math.max(10, Math.round((base * mult) / 5) * 5); }
+  function scaleCount(base, mult){ return Math.max(1, Math.round(base * mult)); }
+
+  function buildMenu(target){
+    const m = target / BASE_KCAL;
+    const meals = [
+      { title: 'Sarapan', items: [
+        'Nasi putih ' + scaleG(200, m) + 'g',
+        'Telur ceplok ' + scaleCount(3, m) + ' butir',
+        'Tempe goreng ' + scaleG(100, m) + 'g',
+        'Sayur tumis secukupnya'
+      ]},
+      { title: 'Snack Pagi', items: [
+        'Roti gandum ' + scaleCount(2, m) + ' lembar + selai kacang 2 sdm',
+        'Pisang 1 buah'
+      ]},
+      { title: 'Makan Siang', items: [
+        'Nasi putih ' + scaleG(250, m) + 'g',
+        'Dada ayam bakar/panggang ' + scaleG(150, m) + 'g',
+        'Tahu ' + scaleG(100, m) + 'g',
+        'Sayur bening / lalapan'
+      ]},
+      { title: 'Snack Sore', items: [
+        'Susu full cream / protein shake 1 gelas',
+        'Kacang almond / mete ' + scaleG(30, m) + 'g'
+      ]},
+      { title: 'Makan Malam', items: [
+        'Nasi putih ' + scaleG(200, m) + 'g',
+        'Ikan / daging sapi ' + scaleG(150, m) + 'g',
+        'Tempe / tahu ' + scaleG(100, m) + 'g',
+        'Sayur secukupnya'
+      ]},
+      { title: 'Sebelum Tidur', items: [
+        'Greek yogurt / susu 1 gelas',
+        'Oatmeal ' + scaleG(30, m) + 'g'
+      ]}
+    ];
+    return meals.map(meal =>
+      '<div class="meal-block"><div class="meal-title">' + meal.title + '</div>' +
+      '<ul class="meal-items">' + meal.items.map(i => '<li>' + i + '</li>').join('') + '</ul></div>'
+    ).join('');
+  }
+
+  document.getElementById('menuBtn').addEventListener('click', function(){
+    const card = document.getElementById('menuCard');
+    const open = card.classList.toggle('show');
+    this.classList.toggle('open', open);
+    this.textContent = open ? '✕ Tutup Menu' : '🍽️ Lihat Menu';
+    if(open){
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+    }
+  });
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -645,16 +720,15 @@
       warnNote.style.display = 'none';
     }
 
-    // ---- Macro bars ----
-    document.getElementById('proteinG').innerHTML = proteinG + 'g <small id="proteinPct">(' + proteinPct + '%)</small>';
-    document.getElementById('carbG').innerHTML = carbG + 'g <small id="carbPct">(' + carbPct + '%)</small>';
-    document.getElementById('fatG').innerHTML = fatG + 'g <small id="fatPct">(' + fatPct + '%)</small>';
+    // ---- Menu (built from target kalori & makro, revealed via button) ----
+    document.getElementById('menuMacroLine').innerHTML =
+      'Target: <b>' + proteinG + 'g</b> protein &nbsp;·&nbsp; <b>' + carbG + 'g</b> karbo &nbsp;·&nbsp; <b>' + fatG + 'g</b> lemak &nbsp;·&nbsp; <b>' + target.toLocaleString('id-ID') + '</b> kkal';
+    document.getElementById('menuList').innerHTML = buildMenu(target);
 
-    requestAnimationFrame(() => {
-      document.getElementById('proteinFill').style.width = Math.min(100, proteinPct * 1.6) + '%';
-      document.getElementById('carbFill').style.width = Math.min(100, carbPct * 1.6) + '%';
-      document.getElementById('fatFill').style.width = Math.min(100, fatPct * 1.6) + '%';
-    });
+    // close/reset menu panel on every new calculation
+    document.getElementById('menuCard').classList.remove('show');
+    document.getElementById('menuBtn').classList.remove('open');
+    document.getElementById('menuBtn').textContent = '🍽️ Lihat Menu';
 
     // ---- Journey (bulking/cutting only) ----
     const journeyCard = document.getElementById('journeyCard');
